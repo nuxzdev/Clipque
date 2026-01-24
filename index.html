@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 Clipque - Bad Hair Day? Just Clip It!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF85C0 0%, #FFA8D5 25%, #FFB8E5 50%, #E0BBE4 75%, #B8D4E8 100%);
+            min-height: 100vh;
+        }
+
+        body.loading {
+            overflow: hidden;
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+        }
+
+        /* Loading Animation */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #FF85C0 0%, #FFA8D5 25%, #FFB8E5 50%, #E0BBE4 75%, #B8D4E8 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeOut 0.5s ease-in-out 2.3s forwards;
+        }
+
+        .loader-content {
+            text-align: center;
+            animation: slideDown 1s ease-out;
+            position: relative;
+        }
+
+        .loader-flower {
+            font-size: 80px;
+            animation: rotate 2s linear infinite;
+            position: relative;
+            display: inline-block;
+        }
+
+        .loader-text {
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            margin-top: 20px;
+        }
+
+        /* Sparkles */
+        .sparkle {
+            position: absolute;
+            font-size: 32px;
+            animation: sparkleFloat 1.2s ease-out forwards;
+            pointer-events: none;
+            opacity: 0;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                opacity: 0;
+                transform: translate(0, 0) scale(0) rotate(0deg);
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(360deg);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                visibility: visible;
+            }
+            100% {
+                opacity: 0;
+                visibility: hidden;
+                display: none;
+            }
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out 2.8s forwards;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        @keyframes fadeIn {
+            to { 
+                opacity: 1; 
+            }
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+            animation: slideInFromTop 1s ease-out 2.8s backwards;
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header h1 {
+            font-size: 42px;
+            color: white;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .flower {
+            font-size: 36px;
+        }
+
+        .tagline {
+            font-size: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-weight: 300;
+            margin-top: 5px;
+        }
+
+        /* Poster */
+        .poster-container {
+            margin: 12px 0;
+            animation: scaleIn 0.8s ease-out 3.2s backwards;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .poster {
+            width: 100%;
+            max-width: 220px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .poster:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+        }
+
+        .poster img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .poster video {
+            width: 100%;
+            height: auto;
+            display: block;
+            will-change: transform;
+        }
+        
+        .media-transition {
+            transition: opacity 0.3s ease;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 17px;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            letter-spacing: 0.5px;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+        
+        .btn:focus {
+            outline: none;
+        }
+
+        .btn-benefit,
+        .btn-tentang {
+            flex: 1;
+            max-width: 190px;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-2px);
+        }
+
+        .btn-benefit {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            color: white;
+            animation: slideInFromLeft 0.8s ease-out 3.5s backwards;
+        }
+
+        .btn-tentang {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            color: white;
+            animation: slideInFromRight 0.8s ease-out 3.5s backwards;
+        }
+
+        .btn-beli {
+            background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            color: white;
+            width: 100%;
+            max-width: 400px;
+            animation: slideInFromBottom 0.8s ease-out 3.7s backwards;
+        }
+
+        @keyframes slideInFromLeft {
+            from {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromBottom {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 40px;
+            border-radius: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: modalSlideIn 0.4s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px) scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            line-height: 1.3;
+        }
+
+        .modal-content p {
+            color: white;
+            font-size: 15px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+        }
+
+        .modal-content ul {
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+
+        .modal-content li {
+            color: white;
+            font-size: 15px;
+            line-height: 2;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+        }
+
+        .modal-content strong {
+            color: #FFE66D;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+        }
+
+        .close-btn {
+            background: linear-gradient(135deg, #FF6B6B 0%, #EE5A6F 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255,107,107,0.4);
+        }
+
+        /* Contact Modal */
+        .contact-options {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .contact-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+        
+        .contact-btn:focus {
+            outline: none;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+        }
+
+        .wa-btn {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+        }
+
+        .ig-btn {
+            background: linear-gradient(135deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%);
+            color: white;
+        }
+
+        .email-btn {
+            background: linear-gradient(135deg, #EA4335 0%, #C5221F 100%);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 36px;
+            }
+            
+            .flower {
+                font-size: 30px;
+            }
+            
+            .tagline {
+                font-size: 18px;
+            }
+            
+            .btn {
+                padding: 10px 28px;
+                font-size: 16px;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
+            }
+
+            .modal-content h2 {
+                font-size: 20px;
+            }
+            
+            .loader-text {
+                font-size: 36px;
+            }
+
+            .poster {
+                max-width: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 30px;
+            }
+            
+            .flower {
+                font-size: 26px;
+            }
+            
+            .tagline {
+                font-size: 16px;
+            }
+            
+            .btn {
+                padding: 9px 22px;
+                font-size: 14px;
+            }
+
+            .modal-content h2 {
+                font-size: 18px;
+            }
+
+            .poster {
+                max-width: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader -->
+    <div class="loader">
+        <div class="loader-content">
+            <div class="loader-flower" id="loaderFlower">🌺</div>
+            <div class="loader-text">Clipque</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span class="flower">🌼</span>
+                Clipque
+                <span class="flower">🌼</span>
+            </h1>
+            <div class="tagline">Bad Hair Day? Just Clip It!</div>
+        </div>
+
+        <div class="poster-container">
+            <div class="poster" id="posterElement">
+                <img src="https://files.catbox.moe/li6oow.jpg" alt="Clipque Poster" id="posterImage">
+                <video id="posterVideo" style="display: none;" loop muted>
+                    <source src="iklan.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-benefit" onclick="showBenefit()">USP</button>
+            <button class="btn btn-tentang" onclick="showTentang()">ABOUT</button>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-beli" onclick="showContact()">BUY NOW</button>
+        </div>
+    </div>
+
+    <!-- Modal Benefit -->
+    <div id="modalBenefit" class="modal" onclick="closeModal(event, 'modalBenefit')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2><span class="emoji">✨</span><span class="text">Clipque Hair Clip Uniqueness</span><span class="emoji">✨</span></h2>
+            <ul>
+                <li>🌟 <strong>Premium Quality</strong> - Made from high-quality materials that won't break easily</li>
+                <li>💕 <strong>Beautiful & Trendy Design</strong> - Latest design collections that make your appearance stunning</li>
+                <li>💰 <strong>Affordable Price</strong> - Best quality with pocket-friendly prices</li>
+                <li>⏰ <strong>Long-lasting & Durable</strong> - A worthy investment, no need to replace frequently</li>
+                <li>🎨 <strong>Color & Model Variations</strong> - Many choices to match your style</li>
+                <li>🛡️ <strong>Hair Safe</strong> - Won't damage or pull hair when used</li>
+                <li>📦 <strong>Safe & Neat Packaging</strong> - Products guaranteed to arrive in perfect condition</li>
+                <li>💯 <strong>Satisfaction Guarantee</strong> - We guarantee you'll be satisfied with our products!</li>
+            </ul>
+            <button class="close-btn" onclick="closeModalDirect('modalBenefit')">Close</button>
+        </div>
+    </div>
+
+    <!-- Modal Tentang -->
+    <div id="modalTentang" class="modal" onclick="closeModal(event, 'modalTentang')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2><span class="emoji">💎</span><span class="text">About Clipque Hair Clips</span><span class="emoji">💎</span></h2>
+            
+            <p><strong>🌸 Best Quality</strong></p>
+            <p>Every Clipque hair clip is produced with high quality standards. Selected materials that are strong yet lightweight, so comfortable to wear all day without causing headaches.</p>
+            
+            <p><strong>💰 Affordable Price</strong></p>
+            <p>We believe everyone deserves to look beautiful without breaking the bank. Clipque's prices are very friendly and comparable to the quality you get.</p>
+            
+            <p><strong>✨ Long-lasting & Durable</strong></p>
+            <p>Clipque clips are designed to last. With proper care, these clips can accompany your days for years. Rust-resistant, break-resistant, and colors don't fade easily.</p>
+            
+            <p><strong>🎨 Exclusive Design</strong></p>
+            <p>Our design collections are always updated following the latest trends. From simple & elegant to bold & statement, everything is available at Clipque!</p>
+            
+            <p><strong>🛡️ Safe for All Hair Types</strong></p>
+            <p>Whether thick, thin, curly, or straight hair - Clipque clips are designed for all hair types. Strong grip but still gentle, won't pull or damage hair.</p>
+            
+            <p><strong>💕 Perfect for All Occasions</strong></p>
+            <p>From casual daily activities to formal events, Clipque has the perfect collection for every special moment!</p>
+            
+            <button class="close-btn" onclick="closeModalDirect('modalTentang')">Close</button>
+        </div>
+    </div>
+
+    <!-- Modal Contact -->
+    <div id="modalContact" class="modal" onclick="closeModal(event, 'modalContact')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2><span class="emoji">💌</span><span class="text">Contact Us</span><span class="emoji">💌</span></h2>
+            <p style="text-align: center; margin-bottom: 30px;">Choose your favorite platform to order!</p>
+            
+            <div class="contact-options">
+                <button class="contact-btn wa-btn" onclick="openWhatsApp()">
+                    📱 WhatsApp
+                </button>
+                <button class="contact-btn ig-btn" onclick="openInstagram()">
+                    📸 Instagram
+                </button>
+                <button class="contact-btn email-btn" onclick="openEmail()">
+                    ✉️ Email
+                </button>
+            </div>
+            
+            <button class="close-btn" onclick="closeModalDirect('modalContact')">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Prevent scroll during loading
+        document.body.classList.add('loading');
+        
+        // Create sparkles animation
+        setTimeout(() => {
+            createSparkles();
+        }, 1700);
+        
+        function createSparkles() {
+            const flower = document.getElementById('loaderFlower');
+            const sparkleEmojis = ['✨', '⭐', '💫', '🌟', '✨', '⭐', '💫', '🌟', '✨', '⭐', '💫', '🌟', '✨', '⭐', '💫', '🌟'];
+            
+            sparkleEmojis.forEach((emoji, index) => {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.textContent = emoji;
+                    
+                    // Random direction with better distribution
+                    const angle = (index / sparkleEmojis.length) * Math.PI * 2;
+                    const distance = 120 + Math.random() * 80;
+                    const tx = Math.cos(angle) * distance;
+                    const ty = Math.sin(angle) * distance;
+                    
+                    sparkle.style.setProperty('--tx', tx + 'px');
+                    sparkle.style.setProperty('--ty', ty + 'px');
+                    sparkle.style.left = '50%';
+                    sparkle.style.top = '50%';
+                    sparkle.style.transform = 'translate(-50%, -50%)';
+                    
+                    flower.appendChild(sparkle);
+                    
+                    setTimeout(() => {
+                        sparkle.remove();
+                    }, 1200);
+                }, index * 30);
+            });
+        }
+        
+        setTimeout(() => {
+            document.body.classList.remove('loading');
+        }, 2800);
+
+        // Poster swipe functionality
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const posterElement = document.getElementById('posterElement');
+        const posterImage = document.getElementById('posterImage');
+        const posterVideo = document.getElementById('posterVideo');
+        let isVideoShowing = false;
+        
+        // Preload video
+        posterVideo.load();
+
+        posterElement.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        posterElement.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+
+        posterElement.addEventListener('mousedown', e => {
+            touchStartX = e.screenX;
+        });
+
+        posterElement.addEventListener('mouseup', e => {
+            touchEndX = e.screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                // Swipe left - show video
+                showVideo();
+            }
+            if (touchEndX > touchStartX + 50) {
+                // Swipe right - show image
+                showImage();
+            }
+        }
+
+        function showVideo() {
+            if (!isVideoShowing) {
+                posterImage.classList.add('media-transition');
+                posterVideo.classList.add('media-transition');
+                
+                posterImage.style.opacity = '0';
+                setTimeout(() => {
+                    posterImage.style.display = 'none';
+                    posterVideo.style.display = 'block';
+                    posterVideo.style.opacity = '1';
+                    posterVideo.muted = false;
+                    posterVideo.play().catch(e => console.log('Video play error:', e));
+                }, 150);
+                
+                isVideoShowing = true;
+            }
+        }
+
+        function showImage() {
+            if (isVideoShowing) {
+                posterVideo.classList.add('media-transition');
+                posterImage.classList.add('media-transition');
+                
+                posterVideo.style.opacity = '0';
+                posterVideo.pause();
+                setTimeout(() => {
+                    posterVideo.currentTime = 0;
+                    posterVideo.style.display = 'none';
+                    posterImage.style.display = 'block';
+                    posterImage.style.opacity = '1';
+                }, 150);
+                
+                isVideoShowing = false;
+            }
+        }
+
+        function showBenefit() {
+            document.getElementById('modalBenefit').classList.add('active');
+        }
+
+        function showTentang() {
+            document.getElementById('modalTentang').classList.add('active');
+        }
+
+        function showContact() {
+            document.getElementById('modalContact').classList.add('active');
+        }
+
+        function closeModal(event, modalId) {
+            if (event.target.classList.contains('modal')) {
+                document.getElementById(modalId).classList.remove('active');
+            }
+        }
+
+        function closeModalDirect(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function openWhatsApp() {
+            window.open('https://wa.me/6289532484212', '_blank');
+        }
+
+        function openInstagram() {
+            window.open('https://www.instagram.com/quietrinn_?igsh=bDVmaDdiOHBuMWxp', '_blank');
+        }
+
+        function openEmail() {
+            window.location.href = 'mailto:kherinratun8@gmail.com';
+        }
+    </script>
+</body>
+</html>
