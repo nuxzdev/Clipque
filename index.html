@@ -474,6 +474,24 @@
             color: white;
         }
 
+        /* Watermark */
+        .watermark {
+            text-align: center;
+            margin-top: 25px;
+            padding: 15px 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-weight: 300;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            animation: slideInFromBottom 0.8s ease-out 4s backwards;
+        }
+
+        .watermark .creator {
+            font-weight: 600;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header h1 {
@@ -574,6 +592,10 @@
 
         <div class="button-group">
             <button class="btn btn-beli" onclick="showContact()">BUY NOW</button>
+        </div>
+
+        <div class="watermark">
+            Crafted with 💖 by <span class="creator">Kherin Silvia</span>
         </div>
     </div>
 
