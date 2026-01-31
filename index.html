@@ -717,9 +717,39 @@
         const posterImage = document.getElementById('posterImage');
         const posterVideo = document.getElementById('posterVideo');
         let isVideoShowing = false;
+        let autoplayTimeout = null;
+        let isAutoplayEnabled = true;
         
         // Preload video
         posterVideo.load();
+        
+        // Auto-play functionality
+        function startAutoplay() {
+            if (!isAutoplayEnabled) return;
+            
+            // Clear any existing timeout
+            if (autoplayTimeout) {
+                clearTimeout(autoplayTimeout);
+            }
+            
+            if (!isVideoShowing) {
+                // Show poster for 5 seconds, then switch to video
+                autoplayTimeout = setTimeout(() => {
+                    showVideo();
+                }, 5000);
+            }
+        }
+        
+        // Listen to video end event
+        posterVideo.addEventListener('ended', () => {
+            // When video ends, go back to poster
+            showImage();
+        });
+        
+        // Start autoplay after page loads
+        setTimeout(() => {
+            startAutoplay();
+        }, 3500); // Start after loading animation completes
 
         posterElement.addEventListener('touchstart', e => {
             touchStartX = e.changedTouches[0].screenX;
@@ -752,6 +782,11 @@
 
         function showVideo() {
             if (!isVideoShowing) {
+                // Clear autoplay timeout
+                if (autoplayTimeout) {
+                    clearTimeout(autoplayTimeout);
+                }
+                
                 posterImage.classList.add('media-transition');
                 posterVideo.classList.add('media-transition');
                 
@@ -783,6 +818,9 @@
                 }, 150);
                 
                 isVideoShowing = false;
+                
+                // Restart autoplay when back to poster
+                startAutoplay();
             }
         }
 
